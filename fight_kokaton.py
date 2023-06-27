@@ -43,7 +43,7 @@ class Bird:
         """
         self.img = pg.transform.flip(  # 左右反転
             pg.transform.rotozoom(  # 2倍に拡大
-                pg.image.load(f"ex03/fig/{num}.png"), 
+                pg.image.load(f"fig/{num}.png"), 
                 0, 
                 2.0), 
             True, 
@@ -58,7 +58,7 @@ class Bird:
         引数1 num：こうかとん画像ファイル名の番号
         引数2 screen：画面Surface
         """
-        self.img = pg.transform.rotozoom(pg.image.load(f"ex03/fig/{num}.png"), 0, 2.0)
+        self.img = pg.transform.rotozoom(pg.image.load(f"fig/{num}.png"), 0, 2.0)
         screen.blit(self.img, self.rct)
 
     def update(self, key_lst: list[bool], screen: pg.Surface):
@@ -95,6 +95,7 @@ class Bomb:
         self.rct.center = random.randint(0, WIDTH), random.randint(0, HEIGHT)
         self.vx, self.vy = +5, +5
 
+
     def update(self, screen: pg.Surface):
         """
         爆弾を速度ベクトルself.vx, self.vyに基づき移動させる
@@ -118,7 +119,7 @@ class Beam:
         引数に基づきビームSurfaceを生成する
         引数 bird：ビームを放つこうかとん
         """
-        self.img = pg.transform.rotozoom(pg.image.load(f"ex03/fig/beam.png"), 0, 2.0)
+        self.img = pg.transform.rotozoom(pg.image.load(f"fig/beam.png"), 0, 2.0)
         self.rct = self.img.get_rect()
         self.rct.left = bird.rct.right
         self.rct.centery = bird.rct.centery
@@ -133,14 +134,36 @@ class Beam:
         screen.blit(self.img, self.rct)
 
 
+class Score:
+    """
+    スコアに表示関するクラス
+    """ 
+    def __init__(self):
+        self.font = pg.font.SysFont("hgp創英角ポップ体", 30)
+        self.word_color = ((0, 0, 255))
+        self.score = 0
+        self.img = self.font.render(f"{self.score}", 0, self.word_color)
+        self.rct = self.img.get_rect()
+        self.rct.center = 100, HEIGHT- 50
+       
+
+    def update(self, screen: pg.Surface):
+        self.img = self.font.render(f"{self.score}", 0, self.word_color)
+        screen.blit(self.img, self.rct)
+
 def main():
     pg.display.set_caption("たたかえ！こうかとん")
     screen = pg.display.set_mode((WIDTH, HEIGHT))    
-    bg_img = pg.image.load("ex03/fig/pg_bg.jpg")
+    bg_img = pg.image.load("fig/pg_bg.jpg")
+
     bird = Bird(3, (900, 400))
     # bomb = Bomb((255, 0, 0), 10)
     bombs = [Bomb((255, 0, 0), 10) for _ in range(NUM_OF_BOMBS)]
     beam = None
+
+    pg.display.set_caption(f"{Score}点")  
+    score = Score()
+    
 
     clock = pg.time.Clock()
     tmr = 0
@@ -167,7 +190,10 @@ def main():
                     bombs[i] = None
                     beam = None
                     bird.change_img(6, screen)
-                    pg.display.update()              
+                    pg.display.update() 
+                    score.score = +1
+                    return
+                         
 
         key_lst = pg.key.get_pressed()
         bird.update(key_lst, screen)
@@ -176,6 +202,7 @@ def main():
             bomb.update(screen)
         if beam is not None:
             beam.update(screen)
+        score.update(screen)
         pg.display.update()
         tmr += 1
         clock.tick(50)
