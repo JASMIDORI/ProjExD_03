@@ -161,7 +161,7 @@ def main():
     bombs = [Bomb((255, 0, 0), 10) for _ in range(NUM_OF_BOMBS)]
     beam = None
 
-    pg.display.set_caption(f"{Score}点")  
+    pg.display.set_caption(f"{Score}点")  #スコアを表示
     score = Score()
     
 
@@ -191,7 +191,8 @@ def main():
                     beam = None
                     bird.change_img(6, screen)
                     pg.display.update() 
-                    score.score = +1
+                    score.score = +1 
+                    #もし、爆弾とビームがぶつかったら、スコアを+1する
                     return
                          
 
